@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Exit build script on first failure.
 set -e

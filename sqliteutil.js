@@ -24,8 +24,7 @@ const createTable = async () => {
       flows TEXT,
       credentials TEXT,
       packages TEXT,
-      settings TEXT,
-      "secureLink" TEXT
+      settings TEXT
     );
   `;
   return when.promise((resolve, reject) => {
@@ -41,7 +40,7 @@ const createTable = async () => {
 
 const doSQL = async (query, values) => {
   if (!db) throw new Error("No sqlite instance");
-  return await when.promise((resolve, reject) => {
+  return when.promise((resolve, reject) => {
     db.all(query, values, (err, rows) => {
       if (err) {
         reject(err);
@@ -77,7 +76,6 @@ const saveConfig = async (appname, params) => {
     "credentials",
     "packages",
     "settings",
-    "secureLink",
     "id",
   ];
   let data = await loadConfig(appname);
@@ -86,12 +84,12 @@ const saveConfig = async (appname, params) => {
   if (data) {
     data = Object.assign(data, params);
     query =
-      'UPDATE "eConfigs" SET appname = $1, flows = $2, credentials = $3, packages = $4, settings = $5, "secureLink" = $6 WHERE id = $7 RETURNING *';
+      'UPDATE "eConfigs" SET appname = $1, flows = $2, credentials = $3, packages = $4, settings = $5 WHERE id = $6';
     values = columns.map((c) => (data[c] ? JSON.stringify(data[c]) : ""));
   } else {
     data = params;
     query =
-      'INSERT INTO "eConfigs"(appname, flows, credentials, packages, settings, "secureLink") VALUES($1, $2, $3, $4, $5, $6) RETURNING *';
+      'INSERT INTO "eConfigs"(appname, flows, credentials, packages, settings) VALUES($1, $2, $3, $4, $5)';
     values = columns
       .slice(0, 6)
       .map((c) => (data[c] ? JSON.stringify(data[c]) : ""));

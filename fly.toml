@@ -12,9 +12,9 @@ primary_region = "sin"
   auto_stop_machines = false
   auto_start_machines = false
   [http_service.concurrency]
-    type = "connections"
-    soft_limit = 20
-    hard_limit = 25
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
 
 [checks]
   [checks.alive]

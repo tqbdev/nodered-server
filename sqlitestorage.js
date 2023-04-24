@@ -5,7 +5,7 @@ let settings;
 let appname;
 
 function timeoutWrap(func) {
-  return when.promise(function (resolve, reject, notify) {
+  return when.promise(function (resolve, reject) {
     const promise = func().timeout(5000, "timeout");
     promise.then(function (a, b, c, d) {
       resolve(a, b, c, d);
@@ -23,17 +23,12 @@ function timeoutWrap(func) {
 
 function getFlows() {
   console.log("getFlows");
-  return when.promise(async (resolve, reject, notify) => {
+  return when.promise(async (resolve, reject) => {
     try {
       const data = await sqliteutil.loadConfig(appname);
       if (data && data.flows) {
         resolve(data.flows);
       } else {
-        // console.log("Prepopulate Flows");
-        // let flow = fs.readFileSync(__dirname + "/defaults/flow.json", "utf8");
-        // let flows = JSON.parse(flow);
-        // let secureLink = process.env.SECURE_LINK;
-        // await sqliteutil.saveConfig(appname, { appname, flows, secureLink });
         resolve([]);
       }
     } catch (err) {
@@ -44,10 +39,9 @@ function getFlows() {
 
 function saveFlows(flows) {
   console.log("saveFlows");
-  return when.promise(async (resolve, reject, notify) => {
+  return when.promise(async (resolve, reject) => {
     try {
-      let secureLink = process.env.SECURE_LINK;
-      await sqliteutil.saveConfig(appname, { appname, flows, secureLink });
+      await sqliteutil.saveConfig(appname, { appname, flows });
       resolve();
     } catch (err) {
       reject(err);
@@ -57,7 +51,7 @@ function saveFlows(flows) {
 
 function getCredentials() {
   console.log("getCredentials");
-  return when.promise(async (resolve, reject, notify) => {
+  return when.promise(async (resolve, reject) => {
     try {
       const data = await sqliteutil.loadConfig(appname);
       if (data && data.credentials) {
@@ -73,7 +67,7 @@ function getCredentials() {
 
 function saveCredentials(credentials) {
   console.log("saveCredentials");
-  return when.promise(async (resolve, reject, notify) => {
+  return when.promise(async (resolve, reject) => {
     try {
       await sqliteutil.saveConfig(appname, { appname, credentials });
       resolve();
@@ -85,7 +79,7 @@ function saveCredentials(credentials) {
 
 function getSettings() {
   console.log("getSettings");
-  return when.promise(async (resolve, reject, notify) => {
+  return when.promise(async (resolve, reject) => {
     try {
       const data = await sqliteutil.loadConfig(appname);
       if (data && data.settings) {
@@ -101,7 +95,7 @@ function getSettings() {
 
 function saveSettings(settings) {
   console.log("saveSettings");
-  return when.promise(async (resolve, reject, notify) => {
+  return when.promise(async (resolve, reject) => {
     try {
       await sqliteutil.saveConfig(appname, { appname, settings });
       resolve();
@@ -115,7 +109,7 @@ const sqlitestorage = {
   init: function (_settings) {
     settings = _settings;
     appname = settings.appName || require("os").hostname();
-    return when.promise(async (resolve, reject, notify) => {
+    return when.promise(async (resolve, reject) => {
       try {
         const db = await sqliteutil.initPG(settings.userDir);
         await sqliteutil.createTable();
